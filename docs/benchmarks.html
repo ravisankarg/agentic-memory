@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical guide to agent-memory retrieval benchmarks, metrics, caveats, and reproducible evaluation design.">
+  <meta name="theme-color" content="#142b38">
+  <title>Benchmark Guide · Agentic Memory Atlas</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the benchmark guide</a>
+  <div class="progress-line" data-progress aria-hidden="true"></div>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a class="brand" href="index.html" aria-label="Agentic Memory Atlas home">
+        <span class="brand-mark" aria-hidden="true">M</span><span>Agentic Memory Atlas</span>
+      </a>
+      <nav class="site-nav" data-site-nav aria-label="Primary navigation">
+        <a href="index.html">Tutorial</a>
+        <a href="benchmarks.html" aria-current="page">Benchmarks</a>
+        <a href="sources.html">Sources</a>
+      </nav>
+      <div class="nav-tools">
+        <button class="icon-button" type="button" data-theme-toggle aria-label="Change color theme">◐</button>
+        <button class="menu-button" type="button" data-menu-toggle aria-expanded="false" aria-label="Open navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <header class="page-hero">
+      <p class="eyebrow">Benchmark field manual</p>
+      <h1>Test the memory, the reader, and the agent separately.</h1>
+      <p>No public score tells the whole story. This guide maps the major suites, their version traps, and a three-layer harness that produces actionable evidence.</p>
+    </header>
+
+    <div class="wide-content">
+      <section class="wide-section">
+        <p class="kicker">The evaluation stack</p>
+        <h2>One system, three different questions</h2>
+        <div class="card-grid three">
+          <article class="card">
+            <span class="card-icon">IR</span>
+            <h3>Did search find the evidence?</h3>
+            <p>Evaluate gold source IDs before an answer model can hide the miss. Use strict all-evidence recall for multi-hop questions.</p>
+          </article>
+          <article class="card">
+            <span class="card-icon blue">QA</span>
+            <h3>Could a fixed reader use it?</h3>
+            <p>Freeze the reader, prompt, temperature, and token budget. Compare retrieved context with oracle evidence and full context.</p>
+          </article>
+          <article class="card">
+            <span class="card-icon orange">AG</span>
+            <h3>Did memory improve action?</h3>
+            <p>Run multi-session tasks where earlier feedback matters. Measure success, progress, latency, and unsafe behavior.</p>
+          </article>
+        </div>
+        <div class="callout teal">
+          <strong>Never collapse these layers into one score.</strong>
+          <p>A system can retrieve the right evidence and still answer incorrectly; it can answer a public benchmark from parametric knowledge without using memory; and perfect recall can still fail to improve an agent’s plan.</p>
+        </div>
+      </section>
+
+      <section class="wide-section" id="catalog">
+        <p class="kicker">Benchmark catalog</p>
+        <h2>Choose by claim, not popularity</h2>
+        <p class="section-intro">Filter the catalog by what you are trying to prove. Scales and taxonomies below refer to the linked current paper/release as checked on 22 September 2026.</p>
+
+        <div class="filter-bar" role="group" aria-label="Filter benchmarks">
+          <button class="filter-button" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter-button" type="button" data-filter="conversation" aria-pressed="false">Conversation</button>
+          <button class="filter-button" type="button" data-filter="incremental" aria-pressed="false">Incremental writes</button>
+          <button class="filter-button" type="button" data-filter="agent" aria-pressed="false">Agent outcomes</button>
+          <button class="filter-button" type="button" data-filter="retrieval" aria-pressed="false">Retriever screening</button>
+          <button class="filter-button" type="button" data-filter="scale" aria-pressed="false">Scale stress</button>
+        </div>
+
+        <div class="benchmark-grid">
+          <article class="benchmark-card" data-benchmark-category="conversation incremental">
+            <div class="badges"><span class="badge teal">conversation</span><span class="badge blue">first-line</span></div>
+            <h3>LongMemEval</h3>
+            <p>Information extraction, multi-session reasoning, knowledge updates, temporal reasoning, and abstention over incrementally supplied user–assistant histories.</p>
+            <div class="benchmark-meta"><span>Current scale<b>500 questions</b></span><span>Context<b>~115K / ~1.5M</b></span><span>Core metrics<b>Recall, nDCG, QA</b></span><span>Best use<b>Regression suite</b></span></div>
+            <a href="https://github.com/xiaowu0162/LongMemEval">Official repository →</a>
+          </article>
+
+          <article class="benchmark-card" data-benchmark-category="conversation">
+            <div class="badges"><span class="badge teal">conversation</span><span class="badge gold">human-edited</span></div>
+            <h3>LoCoMo</h3>
+            <p>Very long multi-session dialogue QA, temporal and multi-hop recall, adversarial questions, event summarization, and multimodal dialogue generation.</p>
+            <div class="benchmark-meta"><span>Current release<b>10 conversations</b></span><span>QA items<b>1,986</b></span><span>Avg. history<b>16.6K tokens</b></span><span>Best use<b>Dialogue memory</b></span></div>
+            <a href="https://github.com/snap-research/locomo">Official repository →</a>
+          </article>
+
+          <article class="benchmark-card" data-benchmark-category="incremental scale">
+            <div class="badges"><span class="badge blue">broad skills</span><span class="badge orange">expensive</span></div>
+            <h3>MemoryAgentBench</h3>
+            <p>Accurate retrieval, test-time learning, long-range understanding, and selective forgetting under streamed, multi-turn ingestion.</p>
+            <div class="benchmark-meta"><span>Current scale<b>2,071 items</b></span><span>Context<b>103K–1.44M</b></span><span>Task families<b>14 datasets</b></span><span>Best use<b>Capability release</b></span></div>
+            <a href="https://github.com/HUST-AI-HYZ/MemoryAgentBench">Official repository →</a>
+          </article>
+
+          <article class="benchmark-card" data-benchmark-category="conversation incremental scale">
+            <div class="badges"><span class="badge gold">capacity</span><span class="badge teal">reflection</span></div>
+            <h3>MemBench</h3>
+            <p>Factual versus reflective memory, participation versus observation, updates, retrieval capacity, and read/write efficiency at controlled noise levels.</p>
+            <div class="benchmark-meta"><span>Corpus<b>Multiple tiers</b></span><span>Metric mix<b>Acc., R@10, time</b></span><span>Data<b>Mostly synthetic</b></span><span>Best use<b>Growth curves</b></span></div>
+            <a href="https://github.com/import-myself/Membench">Official repository →</a>
+          </article>
+
+          <article class="benchmark-card" data-benchmark-category="agent incremental scale">
+            <div class="badges"><span class="badge orange">trajectories</span><span class="badge blue">advanced</span></div>
+            <h3>LongMemEval-V2</h3>
+            <p>Static state, state changes, workflows, environment gotchas, and premise awareness over multimodal web-agent histories.</p>
+            <div class="benchmark-meta"><span>Questions<b>451</b></span><span>History<b>up to 115M tokens</b></span><span>Interface<b>Insert + Query</b></span><span>Best use<b>Experience memory</b></span></div>
+            <a href="https://github.com/xiaowu0162/LongMemEval-V2">Official repository →</a>
+          </article>
+
+          <article class="benchmark-card" data-benchmark-category="agent incremental">
+            <div class="badges"><span class="badge orange">end-to-end</span><span class="badge gold">multi-session</span></div>
+            <h3>MemoryArena</h3>
+            <p>Interdependent subtasks across shopping, travel, web search, and formal reasoning; earlier actions and feedback must guide later behavior.</p>
+            <div class="benchmark-meta"><span>Task groups<b>701</b></span><span>Avg. subtasks<b>6.9</b></span><span>Metrics<b>Success, progress</b></span><span>Best use<b>Agent outcomes</b></span></div>
+            <a href="https://github.com/ZexueHe/MemoryArena">Official repository →</a>
+          </article>
+
+          <article class="benchmark-card" data-benchmark-category="conversation scale">
+            <div class="badges"><span class="badge blue">extreme scale</span><span class="badge orange">nightly</span></div>
+            <h3>BEAM</h3>
+            <p>Ten memory ability families across generated conversations ranging from 128K to 10M tokens, with human-validated probes.</p>
+            <div class="benchmark-meta"><span>Conversations<b>100</b></span><span>Probes<b>2,000</b></span><span>Max context<b>10M tokens</b></span><span>Best use<b>Scale stress</b></span></div>
+            <a href="https://github.com/mohammadtavakoli78/BEAM">Official repository →</a>
+          </article>
+
+          <article class="benchmark-card" data-benchmark-category="conversation scale">
+            <div class="badges"><span class="badge teal">multi-party</span><span class="badge gold">temporal</span></div>
+            <h3>EverMemBench</h3>
+            <p>Collaborative multi-party, multi-group dialogue with changing decisions, role-specific personas, memory awareness, and profile understanding.</p>
+            <div class="benchmark-meta"><span>QA pairs<b>2,400</b></span><span>History<b>&gt;1M tokens</b></span><span>Hard axis<b>Attribution + time</b></span><span>Best use<b>Team memory</b></span></div>
+            <a href="https://arxiv.org/abs/2602.01313">Primary paper →</a>
+          </article>
+
+          <article class="benchmark-card" data-benchmark-category="retrieval">
+            <div class="badges"><span class="badge blue">information retrieval</span><span class="badge">baseline</span></div>
+            <h3>BEIR</h3>
+            <p>Eighteen heterogeneous static retrieval datasets. Excellent for BM25/dense/late-interaction/reranker robustness; not an agent-memory validation.</p>
+            <div class="benchmark-meta"><span>Datasets<b>18</b></span><span>Main metric<b>nDCG@10</b></span><span>Semantics<b>Static corpora</b></span><span>Best use<b>Retriever screen</b></span></div>
+            <a href="https://github.com/beir-cellar/beir">Official repository →</a>
+          </article>
+
+          <article class="benchmark-card" data-benchmark-category="retrieval">
+            <div class="badges"><span class="badge orange">reasoning retrieval</span><span class="badge gold">hard</span></div>
+            <h3>BRIGHT</h3>
+            <p>Real-world queries where relevance requires reasoning rather than simple lexical or semantic similarity. Useful for query expansion and reranker stress.</p>
+            <div class="benchmark-meta"><span>Queries<b>1,398</b></span><span>Domains<b>12 datasets</b></span><span>Main metric<b>nDCG@10</b></span><span>Best use<b>Reasoning IR</b></span></div>
+            <a href="https://brightbenchmark.github.io/">Official project →</a>
+          </article>
+
+          <article class="benchmark-card" data-benchmark-category="retrieval scale">
+            <div class="badges"><span class="badge teal">multilingual</span><span class="badge blue">dynamic</span></div>
+            <h3>AIR-Bench</h3>
+            <p>Automated heterogeneous retrieval benchmark with rolling releases, multilingual QA, and long-document retrieval over real corpora.</p>
+            <div class="benchmark-meta"><span>24.05 release<b>69 datasets</b></span><span>Languages<b>13</b></span><span>Domains<b>9</b></span><span>Best use<b>Encoder screen</b></span></div>
+            <a href="https://github.com/AIR-Bench/AIR-Bench">Official repository →</a>
+          </article>
+
+          <article class="benchmark-card" data-benchmark-category="retrieval">
+            <div class="badges"><span class="badge gold">grounding</span><span class="badge">reader diagnostics</span></div>
+            <h3>RAGBench</h3>
+            <p>Context relevance, utilization, answer adherence, and completeness across industry-oriented RAG examples. Useful for evaluators, not memory writes.</p>
+            <div class="benchmark-meta"><span>Examples<b>100K</b></span><span>Sources<b>12 datasets</b></span><span>Domains<b>5</b></span><span>Best use<b>Groundedness eval</b></span></div>
+            <a href="https://arxiv.org/abs/2407.11005">Primary paper →</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="wide-section" id="choose">
+        <p class="kicker">Recommended suite</p>
+        <h2>A sensible progression for this project</h2>
+        <p class="section-intro">Run the cheapest diagnostic that can falsify your claim before paying for a larger system-level evaluation.</p>
+
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Stage</th><th>Run</th><th>Proves</th><th>Do not claim</th></tr></thead>
+            <tbody>
+              <tr><td>Every change</td><td>Private product-shaped qrels + BM25/dense/hybrid ablations</td><td>Regression-free retrieval on your real schema</td><td>General memory intelligence</td></tr>
+              <tr><td>First public baseline</td><td>Cleaned LongMemEval + current LoCoMo</td><td>Conversation recall, updates, time, abstention</td><td>Task-agent improvement</td></tr>
+              <tr><td>Capability release</td><td>MemBench slices + MemoryAgentBench EventQA and FactConsolidation</td><td>Capacity, reflection, test-time learning, selective forgetting</td><td>Production latency or security</td></tr>
+              <tr><td>Experience memory</td><td>LongMemEval-V2 Small, then Medium</td><td>Evidence gathering from large tool trajectories</td><td>Live environment success</td></tr>
+              <tr><td>Agent claim</td><td>MemoryArena</td><td>Memory improves multi-session task execution</td><td>Retriever quality in isolation</td></tr>
+              <tr><td>Scale qualification</td><td>BEAM 128K, stratified 1M, then 10M only if needed</td><td>Capacity/latency degradation curve</td><td>Natural-user realism</td></tr>
+              <tr><td>Component selection</td><td>BEIR / MTEB release / AIR-Bench / BRIGHT</td><td>Retriever robustness and domain fit</td><td>Agent memory performance</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="wide-section" id="metrics">
+        <p class="kicker">Metrics that diagnose</p>
+        <h2>Report more than Recall@k</h2>
+        <div class="card-grid">
+          <article class="card">
+            <h3>Strict Recall-all@k</h3>
+            <p>Did the result set contain every required evidence unit? Essential for multi-hop questions. Also report the unit: turn, session, fact, file, or trajectory.</p>
+          </article>
+          <article class="card">
+            <h3>Recall-any@k</h3>
+            <p>Did at least one relevant item appear? Useful but optimistic when an answer requires several facts.</p>
+          </article>
+          <article class="card">
+            <h3>nDCG / MRR / precision</h3>
+            <p>How early did good evidence appear, and how much irrelevant context competed with it?</p>
+          </article>
+          <article class="card">
+            <h3>Evidence quality</h3>
+            <p>Wrong-user rate, stale-evidence rate, redundancy, source diversity, future leakage, and malicious-memory admission.</p>
+          </article>
+          <article class="card">
+            <h3>Fixed-reader outcomes</h3>
+            <p>Correctness, temporal/update accuracy, abstention, citation support, groundedness, and oracle gap.</p>
+          </article>
+          <article class="card">
+            <h3>Systems curve</h3>
+            <p>p50/p95 read latency, write/index latency, tokens, storage, update cost, and quality at a fixed token budget.</p>
+          </article>
+        </div>
+
+        <div class="callout gold">
+          <strong>Compare at fixed token budget as well as fixed k.</strong>
+          <p>Top-10 sessions and top-10 atomic facts can differ by orders of magnitude in context size. A fixed k comparison may reward systems that return much more text.</p>
+        </div>
+      </section>
+
+      <section class="wide-section" id="harness">
+        <p class="kicker">Three-layer harness</p>
+        <h2>A benchmark design you can trust</h2>
+
+        <h3>Layer A · Fast component tests on every change</h3>
+        <ol>
+          <li>Create a private sequential corpus with stable memory IDs and source spans. Split by user/conversation—not by question.</li>
+          <li>Cover exact entities, paraphrases, all-evidence multi-hop, “as of” time, corrections, scope, procedural lessons, duplicates, conflicts, and unanswerable cases.</li>
+          <li>Feed the same chunks to BM25, dense, hybrid, reranked hybrid, and agentic retrieval wherever possible.</li>
+          <li>Cache retrieved IDs and scores so regressions can be diffed without an answer model.</li>
+        </ol>
+
+        <h3>Layer B · Fixed-reader end-to-end QA</h3>
+        <ol>
+          <li>Use one pinned reader/model, prompt, temperature, and context budget.</li>
+          <li>Score structured answers directly. Use an LLM judge only for legitimate open-ended paraphrase, and pin its exact version and rubric.</li>
+          <li>Include no-memory, full-context, and oracle-evidence controls.</li>
+          <li>Log whether each error was a retrieval miss, stale/conflicting evidence, reader failure, or abstention failure.</li>
+        </ol>
+
+        <h3>Layer C · Scheduled whole-agent tasks</h3>
+        <ol>
+          <li>Ingest events sequentially; do not bulk-index the final state only.</li>
+          <li>Allow earlier task feedback to alter later tasks.</li>
+          <li>Measure task success and progress alongside memory reads/writes, latency, token spend, and safety failures.</li>
+          <li>Group statistical tests by independent user/conversation/task group, not question, because many questions share a history.</li>
+        </ol>
+
+<pre><code>{
+  "query_id": "q_current_editor_theme",
+  "as_of": "2026-09-22T12:00:00Z",
+  "scope": {"user_id": "u_17", "project_id": "agentic-memory"},
+  "gold": {
+    "answer": "dark",
+    "required_memory_ids": ["mem_pref_theme_v2"],
+    "forbidden_memory_ids": ["mem_pref_theme_v1", "other_user_theme"],
+    "answerable": true
+  },
+  "tags": ["semantic", "update", "scope", "temporal"]
+}</code></pre>
+      </section>
+
+      <section class="wide-section" id="versions">
+        <p class="kicker">Version traps</p>
+        <h2>Benchmarks move underneath you</h2>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Benchmark</th><th>Common stale statement</th><th>What to record</th></tr></thead>
+            <tbody>
+              <tr><td>LoCoMo</td><td>“50 conversations / 7,512 QA” describes an earlier release; current official ACL/repo data uses 10 conversations / 1,986 QA.</td><td>Repository commit, file hash, question-category map</td></tr>
+              <tr><td>LongMemEval</td><td>Pre-cleaned histories can interfere with answer correctness.</td><td>Use the cleaned 2025 release; pin judge and prompt</td></tr>
+              <tr><td>MemoryAgentBench</td><td>Older repo text says Conflict Resolution; the current paper uses Selective Forgetting.</td><td>Paper version, task inventory, chunk size, top-k</td></tr>
+              <tr><td>MemoryArena</td><td>Some comparison tables say 766 task groups; current v2 reports 701.</td><td>Paper/repo revision, environment versions, API state</td></tr>
+              <tr><td>MTEB</td><td>“MTEB score” is ambiguous as tasks and releases expanded substantially.</td><td>Exact task list, release, language subset, primary metric</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="wide-section" id="checklist">
+        <p class="kicker">Reproducibility</p>
+        <h2>Pin everything that can change the answer</h2>
+        <div class="card-grid">
+          <article class="card"><h3>Data</h3><p>Dataset commit and hash, subset, split unit, timestamp policy, hidden canaries, random seed.</p></article>
+          <article class="card"><h3>Writer</h3><p>Extraction prompt/model, chunk schedule, update/overwrite policy, consolidation frequency.</p></article>
+          <article class="card"><h3>Index</h3><p>Chunker, contextualization, embedder, vector dimensions, ANN settings, BM25 tokenizer, graph builder.</p></article>
+          <article class="card"><h3>Query</h3><p>Filters, rewrites, candidate k, fusion constant, reranker, MMR, expansion, evidence token budget.</p></article>
+          <article class="card"><h3>Reader</h3><p>Model snapshot, system/user prompt, temperature, max output, evidence format, citation policy.</p></article>
+          <article class="card"><h3>Judge</h3><p>Exact rubric, model snapshot, rationale, retries, parsing, human agreement sample.</p></article>
+        </div>
+        <div class="callout">
+          <strong>Hide benchmark plumbing from the memory system.</strong>
+          <p>Do not expose question type, benchmark name, gold answer, evidence IDs, future timestamps, or file paths that encode relevance. LongMemEval-V2’s anti-leak design is a useful model.</p>
+        </div>
+      </section>
+
+      <section class="wide-section" id="roadmap">
+        <p class="kicker">Four-week launch plan</p>
+        <h2>From zero to credible benchmark</h2>
+        <div class="timeline">
+          <div class="timeline-item"><time>WEEK 1</time><h3>Private gold set</h3><p>Author 100 product-shaped queries over 10 independent histories. Include scope, update, temporal, multi-hop, procedural, malicious, and unanswerable cases.</p></div>
+          <div class="timeline-item"><time>WEEK 2</time><h3>Retrieval baselines</h3><p>Implement BM25, dense, hybrid RRF, and hybrid + reranker. Freeze ingestion and report strict recall plus latency at fixed token budgets.</p></div>
+          <div class="timeline-item"><time>WEEK 3</time><h3>Public replication</h3><p>Run cleaned LongMemEval and current LoCoMo with frozen reader, oracle, no-memory, and full-context controls.</p></div>
+          <div class="timeline-item"><time>WEEK 4</time><h3>Target the failure mode</h3><p>Add temporal resolution, hierarchy, graph, or agentic file search only where per-capability error analysis shows a clear gap.</p></div>
+        </div>
+        <div class="inline-actions">
+          <a class="button primary" href="index.html#build">Return to the starter architecture</a>
+          <a class="button" href="sources.html">Open the source library</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <p class="footer-title">A benchmark should explain the failure.</p>
+        <p class="footer-note">Pin data, writers, retrievers, readers, judges, and token budgets. Publish per-capability errors and an accuracy–latency–cost frontier.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer navigation"><a href="index.html">Tutorial</a><a href="sources.html">Sources</a></nav>
+    </div>
+  </footer>
+</body>
+</html>

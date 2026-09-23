@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Primary research papers, official repositories, and official documentation behind the Agentic Memory Atlas.">
+  <meta name="theme-color" content="#142b38">
+  <title>Source Library · Agentic Memory Atlas</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the source library</a>
+  <div class="progress-line" data-progress aria-hidden="true"></div>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a class="brand" href="index.html" aria-label="Agentic Memory Atlas home"><span class="brand-mark" aria-hidden="true">M</span><span>Agentic Memory Atlas</span></a>
+      <nav class="site-nav" data-site-nav aria-label="Primary navigation">
+        <a href="index.html">Tutorial</a><a href="benchmarks.html">Benchmarks</a><a href="sources.html" aria-current="page">Sources</a>
+      </nav>
+      <div class="nav-tools">
+        <button class="icon-button" type="button" data-theme-toggle aria-label="Change color theme">◐</button>
+        <button class="menu-button" type="button" data-menu-toggle aria-expanded="false" aria-label="Open navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <header class="page-hero">
+      <p class="eyebrow">Primary-source library</p>
+      <h1>Trace every important claim.</h1>
+      <p>Papers, official repositories, and official documentation used to build this guide. Sources were checked on 22 September 2026.</p>
+    </header>
+
+    <div class="article-shell">
+      <aside class="toc" aria-label="Source groups">
+        <p class="toc-label">Source groups</p>
+        <a href="#foundations">Foundations</a>
+        <a href="#files-docs">Files & frameworks</a>
+        <a href="#retrieval">Retrieval methods</a>
+        <a href="#frontier-sources">Memory frontiers</a>
+        <a href="#benchmark-sources">Benchmarks</a>
+        <a href="#security-sources">Security</a>
+        <a href="#method">Research method</a>
+      </aside>
+
+      <article class="article">
+        <section class="article-section" id="foundations">
+          <p class="kicker">Foundations</p>
+          <h2>Memory, context, and agents</h2>
+          <div class="source-list">
+            <div class="source-item"><span class="source-year">2023</span><div><a href="https://arxiv.org/abs/2304.03442">Generative Agents: Interactive Simulacra of Human Behavior</a><p>Memory stream, relevance + recency + importance retrieval, reflection, and planning. Influential architecture—not a universal ranking formula.</p></div></div>
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://arxiv.org/abs/2309.02427">CoALA: Cognitive Architectures for Language Agents</a><p>Working, episodic, semantic, and procedural memory taxonomy; decision procedures and memory operations.</p></div></div>
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://arxiv.org/abs/2310.08560">MemGPT: Towards LLMs as Operating Systems</a><p>Hierarchical memory and explicit context paging between constrained working context and external storage.</p></div></div>
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://arxiv.org/abs/2307.03172">Lost in the Middle</a><p>Evidence use varies with position inside long prompts; context capacity does not guarantee robust context utilization.</p></div></div>
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://arxiv.org/abs/2404.06654">RULER</a><p>Long-context evaluation beyond a single needle, including multi-hop tracing and aggregation.</p></div></div>
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://arxiv.org/abs/2407.16833">Retrieval-Augmented Generation or Long-Context LLMs?</a><p>Controlled comparison: long context can win on average quality when resourced; RAG has a large cost advantage; routing is useful.</p></div></div>
+          </div>
+        </section>
+
+        <section class="article-section" id="files-docs">
+          <p class="kicker">Official documentation</p>
+          <h2>File conventions and structured stores</h2>
+          <div class="source-list">
+            <div class="source-item"><span class="source-year">LIVE</span><div><a href="https://docs.openclaw.ai/concepts/memory">OpenClaw memory overview</a><p>Explicit <code>USER.md</code>, curated <code>MEMORY.md</code>, and ISO-dated daily note convention.</p></div></div>
+            <div class="source-item"><span class="source-year">LIVE</span><div><a href="https://docs.openclaw.ai/concepts/memory-search">OpenClaw memory search</a><p>Hybrid retrieval, recency handling, and MMR diversity behavior in a file-based memory system.</p></div></div>
+            <div class="source-item"><span class="source-year">LIVE</span><div><a href="https://docs.letta.com/concepts/memfs">Letta MemFS</a><p>Git-backed Markdown memory; <code>system/</code> files are always loaded while deeper files are searched/read on demand.</p></div></div>
+            <div class="source-item"><span class="source-year">LIVE</span><div><a href="https://docs.langchain.com/oss/python/concepts/memory">LangGraph memory overview</a><p>Short versus long-term memory; semantic, episodic, and procedural types; profile versus collection; hot-path versus background writes.</p></div></div>
+            <div class="source-item"><span class="source-year">LIVE</span><div><a href="https://docs.anthropic.com/en/docs/claude-code/memory">Claude Code memory documentation</a><p>Layered <code>CLAUDE.md</code> instruction/context discovery. Product-specific procedural context, not a universal memory schema.</p></div></div>
+            <div class="source-item"><span class="source-year">LIVE</span><div><a href="https://agents.md/">AGENTS.md open format</a><p>Free-form repository instructions for coding agents. Interoperable convention, not a long-term-memory interchange standard.</p></div></div>
+            <div class="source-item"><span class="source-year">LIVE</span><div><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/episodic-memory-strategy.html">AWS AgentCore episodic-memory strategy</a><p>Structured episodes built from situation, intent, assessment, justification, and reflection.</p></div></div>
+          </div>
+        </section>
+
+        <section class="article-section" id="retrieval">
+          <p class="kicker">Retrieval building blocks</p>
+          <h2>From lexical search to adaptive retrieval</h2>
+          <div class="source-list">
+            <div class="source-item"><span class="source-year">2009</span><div><a href="https://doi.org/10.1145/1571941.1572114">Reciprocal Rank Fusion</a><p>Rank-list fusion that avoids directly combining incomparable BM25 and cosine score scales.</p></div></div>
+            <div class="source-item"><span class="source-year">2019</span><div><a href="https://arxiv.org/abs/1901.04085">Passage Re-ranking with BERT</a><p>Foundation for query-document cross-encoder reranking.</p></div></div>
+            <div class="source-item"><span class="source-year">2020</span><div><a href="https://arxiv.org/abs/2004.04906">Dense Passage Retrieval</a><p>Canonical dual-encoder dense retrieval baseline.</p></div></div>
+            <div class="source-item"><span class="source-year">2020</span><div><a href="https://arxiv.org/abs/2004.12832">ColBERT</a><p>Fine-grained token-level late interaction with precomputable document representations.</p></div></div>
+            <div class="source-item"><span class="source-year">2021</span><div><a href="https://arxiv.org/abs/2104.08663">BEIR</a><p>Heterogeneous zero-shot IR benchmark; BM25 remains robust, while late interaction and reranking are strong but costly.</p></div></div>
+            <div class="source-item"><span class="source-year">2021</span><div><a href="https://arxiv.org/abs/2109.10086">SPLADE v2</a><p>Learned sparse retrieval with vocabulary expansion and inverted-index compatibility.</p></div></div>
+            <div class="source-item"><span class="source-year">2022</span><div><a href="https://arxiv.org/abs/2112.01488">ColBERTv2</a><p>Denoised supervision and residual compression, reducing late-interaction storage by 6–10× in its experiments.</p></div></div>
+            <div class="source-item"><span class="source-year">2022</span><div><a href="https://arxiv.org/abs/2210.07316">MTEB</a><p>Broad embedding benchmark; no one method dominated all tasks in the original study.</p></div></div>
+            <div class="source-item"><span class="source-year">2023</span><div><a href="https://arxiv.org/abs/2212.10509">IRCoT</a><p>Interleaves chain-of-thought steps with follow-up retrieval for multi-step questions.</p></div></div>
+            <div class="source-item"><span class="source-year">2023</span><div><a href="https://arxiv.org/abs/2212.10496">HyDE</a><p>Hypothetical document embeddings for zero-shot dense retrieval; useful but susceptible to query drift.</p></div></div>
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://arxiv.org/abs/2402.03216">BGE-M3</a><p>One model supporting dense, learned sparse, and multi-vector retrieval across 100+ languages.</p></div></div>
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://www.anthropic.com/engineering/contextual-retrieval">Anthropic Contextual Retrieval</a><p>Contextualized chunks, BM25 + embeddings, and reranking; reports large reductions in top-20 retrieval failure on its test corpus.</p></div></div>
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://arxiv.org/abs/2407.12883">BRIGHT</a><p>Reasoning-intensive relevance; exposes major gaps in similarity-led retrieval and benefits from reasoning-based query expansion.</p></div></div>
+          </div>
+        </section>
+
+        <section class="article-section" id="frontier-sources">
+          <p class="kicker">Structured and agentic frontiers</p>
+          <h2>Beyond flat top-k retrieval</h2>
+          <div class="source-list">
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://arxiv.org/abs/2401.18059">RAPTOR</a><p>Recursive clusters and summaries form a retrieval tree with multiple levels of abstraction.</p></div></div>
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://arxiv.org/abs/2404.16130">From Local to Global: GraphRAG</a><p>Community summaries and graph structure for corpus-wide “global” questions.</p></div></div>
+            <div class="source-item"><span class="source-year">2025</span><div><a href="https://arxiv.org/abs/2502.14802">HippoRAG 2</a><p>Graph + Personalized PageRank retrieval with stronger passage integration across factual, sense-making, and associative memory.</p></div></div>
+            <div class="source-item"><span class="source-year">2025</span><div><a href="https://arxiv.org/abs/2501.13956">Zep / Graphiti temporal memory</a><p>Temporal knowledge graph for evolving facts, historical relationships, and hybrid retrieval.</p></div></div>
+            <div class="source-item"><span class="source-year">2025</span><div><a href="https://arxiv.org/abs/2504.19413">Mem0</a><p>Production-oriented extraction, consolidation, vector/graph memory, and benchmark results.</p></div></div>
+            <div class="source-item"><span class="source-year">2025</span><div><a href="https://arxiv.org/abs/2509.25911">Mem-α</a><p>Reinforcement learning for what, how, and when to write into core, episodic, and semantic memory.</p></div></div>
+            <div class="source-item"><span class="source-year">2025</span><div><a href="https://arxiv.org/abs/2512.12818">Hindsight</a><p>Facts, experiences, entity summaries, evolving beliefs; retain–recall–reflect operations and strong reported LongMemEval/LoCoMo results.</p></div></div>
+            <div class="source-item"><span class="source-year">2026</span><div><a href="https://arxiv.org/abs/2605.12493">LongMemEval-V2 / AgentRunbook</a><p>File-native coding-agent memory and structured multi-pool RAG over huge web-agent trajectories.</p></div></div>
+          </div>
+        </section>
+
+        <section class="article-section" id="benchmark-sources">
+          <p class="kicker">Evaluation</p>
+          <h2>Memory and retrieval benchmarks</h2>
+          <div class="source-list">
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://aclanthology.org/2024.acl-long.747/">LoCoMo paper</a><p>Long-term conversation QA, summarization, and multimodal response generation. Use the current official repository release for counts.</p></div></div>
+            <div class="source-item"><span class="source-year">2025</span><div><a href="https://arxiv.org/abs/2410.10813">LongMemEval paper</a><p>Five long-term memory abilities, retrieval labels, scalable histories, and a unified index–retrieve–read framework.</p></div></div>
+            <div class="source-item"><span class="source-year">2025</span><div><a href="https://aclanthology.org/2025.findings-acl.989/">MemBench paper</a><p>Factual/reflective memory, participation/observation settings, effectiveness, efficiency, and capacity.</p></div></div>
+            <div class="source-item"><span class="source-year">2026</span><div><a href="https://arxiv.org/abs/2507.05257">MemoryAgentBench paper</a><p>Accurate retrieval, test-time learning, long-range understanding, and selective forgetting across 2,071 items.</p></div></div>
+            <div class="source-item"><span class="source-year">2026</span><div><a href="https://arxiv.org/abs/2602.16313">MemoryArena paper</a><p>Memory–agent–environment loops with interdependent multi-session subtasks and outcome metrics.</p></div></div>
+            <div class="source-item"><span class="source-year">2026</span><div><a href="https://arxiv.org/abs/2602.01313">EverMemBench paper</a><p>Multi-party, multi-group collaborative memory with evolving decisions and role attribution.</p></div></div>
+            <div class="source-item"><span class="source-year">2026</span><div><a href="https://arxiv.org/abs/2510.27246">BEAM paper</a><p>Long-conversation stress test from 128K to 10M tokens across ten memory ability families.</p></div></div>
+            <div class="source-item"><span class="source-year">2025</span><div><a href="https://arxiv.org/abs/2412.13102">AIR-Bench paper</a><p>Automated, heterogeneous, dynamic retrieval evaluation across domains and languages.</p></div></div>
+            <div class="source-item"><span class="source-year">2024</span><div><a href="https://arxiv.org/abs/2407.11005">RAGBench paper</a><p>TRACe dimensions for context relevance, utilization, adherence/groundedness, and completeness.</p></div></div>
+          </div>
+        </section>
+
+        <section class="article-section" id="security-sources">
+          <p class="kicker">Security and governance</p>
+          <h2>Memory is persistent input</h2>
+          <div class="source-list">
+            <div class="source-item"><span class="source-year">2026</span><div><a href="https://genai.owasp.org/2026/05/13/memory-is-a-feature-it-is-also-an-attack-surface/">OWASP: Memory is a feature—and an attack surface</a><p>Persistent context poisoning, cross-session influence, and the need for provenance and trust boundaries.</p></div></div>
+            <div class="source-item"><span class="source-year">LIVE</span><div><a href="https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html">OWASP AI Agent Security Cheat Sheet</a><p>Memory poisoning, tool abuse, privilege boundaries, and agent security controls.</p></div></div>
+            <div class="source-item"><span class="source-year">LIVE</span><div><a href="https://docs.openclaw.ai/concepts/memory-provenance">OpenClaw memory provenance</a><p>Lineage, trust, promotion, and deletion behavior in a live memory implementation.</p></div></div>
+          </div>
+        </section>
+
+        <section class="article-section" id="method">
+          <p class="kicker">Research method</p>
+          <h2>How this atlas handles claims</h2>
+          <ul>
+            <li>Primary papers, official repositories, and official product documentation are preferred over secondary summaries.</li>
+            <li>Reported benchmark results are attributed to the reporting paper; they are not assumed independently reproduced.</li>
+            <li>“State of the art” is limited to a benchmark/setup and treated as time-sensitive.</li>
+            <li>Public datasets, judge models, and repository contents can drift. The benchmark guide records known version mismatches.</li>
+            <li>Proposed schemas and architecture recommendations are labeled as synthesis, not standards.</li>
+          </ul>
+          <div class="callout gold">
+            <strong>Important caveat</strong>
+            <p>Cross-paper memory scores are rarely apples-to-apples. Different writers, embedding models, readers, prompts, context budgets, judges, and dataset releases can move the result. Re-run candidate systems inside one pinned harness before choosing a design.</p>
+          </div>
+          <div class="inline-actions"><a class="button primary" href="index.html">Read the tutorial</a><a class="button" href="benchmarks.html">Build the benchmark plan</a></div>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><p class="footer-title">Evidence before architecture.</p><p class="footer-note">If a result cannot be tied to a versioned source and a reproducible setup, treat it as a lead—not a conclusion.</p></div>
+      <nav class="footer-links" aria-label="Footer navigation"><a href="index.html">Tutorial</a><a href="benchmarks.html">Benchmarks</a></nav>
+    </div>
+  </footer>
+</body>
+</html>

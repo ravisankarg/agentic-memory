@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A research-backed field guide to agentic memory files, retrieval architectures, benchmarks, and the 2026 state of the art.">
+  <meta name="theme-color" content="#142b38">
+  <title>Agentic Memory Atlas</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the tutorial</a>
+  <div class="progress-line" data-progress aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a class="brand" href="index.html" aria-label="Agentic Memory Atlas home">
+        <span class="brand-mark" aria-hidden="true">M</span>
+        <span>Agentic Memory Atlas</span>
+      </a>
+      <nav class="site-nav" data-site-nav aria-label="Primary navigation">
+        <a href="index.html" aria-current="page">Tutorial</a>
+        <a href="benchmarks.html">Benchmarks</a>
+        <a href="sources.html">Sources</a>
+      </nav>
+      <div class="nav-tools">
+        <button class="icon-button" type="button" data-theme-toggle aria-label="Change color theme">◐</button>
+        <button class="menu-button" type="button" data-menu-toggle aria-expanded="false" aria-label="Open navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Field guide · research snapshot 22 Sep 2026</p>
+          <h1>Memory that an agent can actually use.</h1>
+          <p class="hero-deck">From <code>USER.md</code> and daily notes to hybrid search, temporal graphs, file-native agents, and trustworthy benchmarks—a practical map of the whole field.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#definition">Start with the mental model</a>
+            <a class="button" href="benchmarks.html">Open the benchmark guide</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Memory types orbit a query-time context core">
+          <div class="orbit">
+            <div class="memory-core">
+              <div>
+                <strong>Working context</strong>
+                <span>small, selected, query-specific</span>
+              </div>
+            </div>
+            <div class="orbit-card semantic"><b>Semantic</b><span>facts, preferences, current state</span></div>
+            <div class="orbit-card episodic"><b>Episodic</b><span>events, attempts, outcomes, time</span></div>
+            <div class="orbit-card procedural"><b>Procedural</b><span>rules, skills, runbooks, gotchas</span></div>
+            <div class="orbit-card evidence"><b>Source evidence</b><span>raw turns, files, tool traces</span></div>
+            <span class="pulse-dot one" aria-hidden="true"></span>
+            <span class="pulse-dot two" aria-hidden="true"></span>
+            <span class="pulse-dot three" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="snapshot" aria-label="Three core conclusions">
+      <article class="snapshot-item">
+        <span class="snapshot-number">01</span>
+        <strong>File names are conventions</strong>
+        <p><code>USER.md</code>, <code>MEMORY.md</code>, and dated notes are useful patterns—not an industry-wide schema.</p>
+      </article>
+      <article class="snapshot-item">
+        <span class="snapshot-number">02</span>
+        <strong>Retrieval allocates attention</strong>
+        <p>It selects authorized, current, answer-bearing evidence from a history that is too large and noisy to reread every turn.</p>
+      </article>
+      <article class="snapshot-item">
+        <span class="snapshot-number">03</span>
+        <strong>“SOTA” is a Pareto frontier</strong>
+        <p>Accuracy, latency, write cost, temporal correctness, and task type decide the winner. One dense index does not.</p>
+      </article>
+    </section>
+
+    <div class="article-shell">
+      <aside class="toc" aria-label="On this page">
+        <p class="toc-label">On this page</p>
+        <a href="#definition">1. What memory is</a>
+        <a href="#files">2. Memory files</a>
+        <a href="#architecture">3. Recommended structure</a>
+        <a href="#why-retrieval">4. Why retrieval</a>
+        <a href="#retrieval-stack">5. Retrieval stack</a>
+        <a href="#frontier">6. 2026 frontier</a>
+        <a href="#build">7. Build the first system</a>
+        <a href="#safety">8. Trust & safety</a>
+        <a href="#takeaways">9. Takeaways</a>
+      </aside>
+
+      <article class="article">
+        <section class="article-section" id="definition">
+          <p class="kicker">01 · Mental model</p>
+          <h2>What is agentic memory?</h2>
+          <p class="lede">Agentic memory is persistent state that an agent can write, update, search, and use in later decisions. It lives outside the model’s fixed weights and outside the current prompt, but it can be brought into working context when needed.</p>
+
+          <div class="callout teal">
+            <strong>Memory is not one thing.</strong>
+            <p>A complete system has a canonical store, memory representations, derived indexes, a retrieval policy, a reader, and an update/forgetting lifecycle. Calling a vector database “the memory” hides most of the hard problems.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card">
+              <span class="card-icon">WM</span>
+              <h3>Working memory</h3>
+              <p>The current goal, recent messages, plan, and selected evidence. Fast and directly visible to the model, but bounded and ephemeral.</p>
+            </article>
+            <article class="card">
+              <span class="card-icon orange">EP</span>
+              <h3>Episodic memory</h3>
+              <p>What happened: situations, actions, observations, outcomes, timestamps, and lessons from particular attempts.</p>
+            </article>
+            <article class="card">
+              <span class="card-icon blue">SM</span>
+              <h3>Semantic memory</h3>
+              <p>What is believed to be true: user preferences, entity facts, project decisions, relationships, and current state.</p>
+            </article>
+            <article class="card">
+              <span class="card-icon gold">PM</span>
+              <h3>Procedural memory</h3>
+              <p>How to act: policies, prompts, skills, runbooks, successful workflows, failure modes, and stop rules.</p>
+            </article>
+          </div>
+
+          <p>This working/episodic/semantic/procedural split is a useful research taxonomy, described explicitly by <a href="https://arxiv.org/abs/2309.02427">CoALA</a> and adopted in framework guidance such as <a href="https://docs.langchain.com/oss/python/concepts/memory">LangGraph’s memory overview</a>. It is not a mandatory storage format. One Markdown file can mix all four types—but doing so makes search, updates, trust, and deletion harder.</p>
+
+          <h3>Four layers that people often confuse</h3>
+          <div class="pipeline" aria-label="Memory layers from source to answer">
+            <div class="pipeline-step"><span class="step-number">1</span><b>Canonical evidence</b><span>Raw messages, tool results, files, events, and trajectories.</span></div>
+            <div class="pipeline-step"><span class="step-number">2</span><b>Derived memory</b><span>Atomic facts, episodes, summaries, profiles, and procedures.</span></div>
+            <div class="pipeline-step"><span class="step-number">3</span><b>Search indexes</b><span>FTS/BM25, vectors, entity graph, time and metadata indexes.</span></div>
+            <div class="pipeline-step"><span class="step-number">4</span><b>Evidence pack</b><span>A small, cited context assembled for this question and reader.</span></div>
+          </div>
+          <p>The safe rule is: <strong>raw evidence is canonical; summaries and indexes are rebuildable views.</strong> A lossy summary should never become the only surviving copy of what happened.</p>
+        </section>
+
+        <section class="article-section" id="files">
+          <p class="kicker">02 · File conventions</p>
+          <h2>What are <code>USER.md</code>, <code>MEMORY.md</code>, and daily files?</h2>
+          <p class="section-intro">They are recognizable conventions in file-based agents, but the names and loading behavior differ by product. The architecture matters more than the exact filenames.</p>
+
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr><th>Artifact</th><th>Good meaning</th><th>Loading policy</th><th>Common failure</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>USER.md</code></td><td>Small, current user preferences and interaction directives</td><td>Always on or high-priority lookup</td><td>Becomes a speculative dossier or stores secrets</td></tr>
+                <tr><td><code>MEMORY.md</code></td><td>Curated durable facts, decisions, and pointers to deeper memory</td><td>Small bootstrap/index</td><td>Turns into a monolithic transcript dump</td></tr>
+                <tr><td><code>memory/YYYY-MM-DD.md</code></td><td>Append-mostly daily observations and session summaries</td><td>Retrieved on demand; perhaps today/yesterday at startup</td><td>Temporary guesses promoted as timeless truth</td></tr>
+                <tr><td><code>entities/*.md</code></td><td>Facts and changes centered on a person, project, place, or system</td><td>Entity-aware retrieval</td><td>Duplicate aliases and unresolved contradictions</td></tr>
+                <tr><td><code>procedures/*.md</code></td><td>Reviewed skills, workflows, policies, and gotchas</td><td>Task/trigger routing</td><td>Untrusted text silently changes agent behavior</td></tr>
+                <tr><td><code>events/*.jsonl</code></td><td>Machine-readable append-only event log with source IDs</td><td>Never inject wholesale</td><td>Treated as prompt-ready prose</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout gold">
+            <strong>Use ISO dates, not <code>memory.ddmmyy.md</code>.</strong>
+            <p><code>2026-09-22.md</code> is unambiguous, sorts chronologically as text, supports range scans, and composes cleanly with timestamps such as <code>2026-09-22T16-40-00Z--release.md</code>.</p>
+          </div>
+
+          <h3>What actual systems do</h3>
+          <ul>
+            <li><a href="https://docs.openclaw.ai/concepts/memory">OpenClaw</a> explicitly documents <code>USER.md</code>, a curated <code>MEMORY.md</code>, and <code>memory/YYYY-MM-DD.md</code> working notes.</li>
+            <li><a href="https://docs.letta.com/concepts/memfs">Letta MemFS</a> keeps always-loaded Markdown under <code>system/</code>; other memory files remain out of context until an agent searches or reads them.</li>
+            <li><a href="https://docs.anthropic.com/en/docs/claude-code/memory">Claude Code</a> uses layered <code>CLAUDE.md</code> files primarily for project/user instructions—not a universal fact-memory schema.</li>
+            <li><a href="https://agents.md/">AGENTS.md</a> is an open, free-form repository instruction convention. It is useful procedural context, not a standardized long-term memory interchange format.</li>
+            <li>Database-oriented systems usually store typed JSON records under user/project namespaces rather than prescribing filenames.</li>
+          </ul>
+
+          <h3>The convergent pattern: progressive disclosure</h3>
+          <div class="comparison">
+            <div>
+              <span class="badge orange">Always visible</span>
+              <h3>Small bootstrap layer</h3>
+              <ul>
+                <li>Critical constraints and identity</li>
+                <li>A few current user preferences</li>
+                <li>High-signal project decisions</li>
+                <li>Pointers into deeper topics</li>
+              </ul>
+            </div>
+            <div>
+              <span class="badge teal">On demand</span>
+              <h3>Deep memory layer</h3>
+              <ul>
+                <li>Topic, entity, and episode files</li>
+                <li>Detailed daily notes and trajectories</li>
+                <li>Raw sources and provenance</li>
+                <li>Rebuildable lexical/vector indexes</li>
+              </ul>
+            </div>
+          </div>
+          <p>A short index gives the model orientation; precise search retrieves detail. This avoids paying the token and attention cost of every memory on every turn.</p>
+        </section>
+
+        <section class="article-section" id="architecture">
+          <p class="kicker">03 · Recommended structure</p>
+          <h2>A transparent, local-first memory layout</h2>
+          <p class="section-intro">This is a recommended synthesis—not a standard. It keeps human-readable canonical files while leaving room for a database-backed production implementation.</p>
+
+<pre><code>agentic-memory/
+├── AGENTS.md                    # operator-authored behavior, not learned facts
+├── memory/
+│   ├── USER.md                  # tiny, current, user-reviewable directives
+│   ├── MEMORY.md                # curated index and durable decisions
+│   ├── daily/
+│   │   └── 2026-09-22.md        # append-mostly working evidence
+│   ├── entities/
+│   │   └── project-agentic-memory.md
+│   ├── episodes/                # situation → action → outcome → lesson
+│   ├── procedures/              # reviewed runbooks and skills
+│   ├── sources/                 # raw session/tool/file evidence
+│   └── tombstones/              # deletions and re-ingestion guards
+└── .memory-index/               # disposable FTS/vector/graph artifacts</code></pre>
+
+          <p>For small, single-user systems, Markdown plus SQLite FTS5 is enough to start. For multi-user production, keep Markdown as an export/projection while Postgres or SQLite holds atomic records, access controls, valid-time fields, transactions, and deletion lineage.</p>
+
+          <h3>One coherent claim per record</h3>
+<pre><code>---
+id: mem_01K5Q9W8D2
+type: preference              # fact | episode | reflection | procedure
+scope:
+  tenant_id: personal
+  user_id: user_001
+  project_id: agentic-memory
+status: active               # superseded | disputed | expired | retracted
+observed_at: 2026-09-22T10:30:00+05:30
+valid_from: 2026-09-22
+valid_until:
+source_refs:
+  - session_id: s_456
+    turn_id: t_18
+provenance: explicit_user    # verified_tool | observed | inferred | derived
+trust: trusted               # untrusted | reviewed
+confidence: high
+sensitivity: personal        # public | internal | secret
+entities: [user:user_001]
+supersedes: []
+retention: until_superseded
+---
+
+Prefer concise progress updates while implementation is running.</code></pre>
+
+          <h3>Why each field exists</h3>
+          <div class="card-grid">
+            <article class="card"><h3>Scope</h3><p>Authorization and tenancy are hard filters. Similarity must never decide which user’s memories are visible.</p></article>
+            <article class="card"><h3>Two kinds of time</h3><p><code>observed_at</code> records when the system learned something; <code>valid_from/to</code> records when it was true.</p></article>
+            <article class="card"><h3>Provenance</h3><p>Explicit user statements, tool-verified facts, observations, and inferences deserve different trust and promotion rules.</p></article>
+            <article class="card"><h3>Supersession</h3><p>Append and link changes instead of silently overwriting history. Retrieval can resolve the current view.</p></article>
+          </div>
+
+          <h3>The write lifecycle</h3>
+          <div class="timeline">
+            <div class="timeline-item"><time>CAPTURE</time><h3>Keep source identity</h3><p>Actor, role, session, time, tool, artifact, and exact source span.</p></div>
+            <div class="timeline-item"><time>ADMIT</time><h3>Apply trust and privacy policy</h3><p>Reject secrets, unnecessary personal data, unsupported claims, and untrusted behavior-changing instructions.</p></div>
+            <div class="timeline-item"><time>EXTRACT</time><h3>Create atomic memories</h3><p>Classify facts, preferences, episodes, reflections, and procedures. Keep source links.</p></div>
+            <div class="timeline-item"><time>CONSOLIDATE</time><h3>Add, merge, supersede, or skip</h3><p>Run heavier summarization asynchronously; never blindly append every sentence as a permanent memory.</p></div>
+            <div class="timeline-item"><time>INDEX</time><h3>Build disposable search views</h3><p>Lexical, vector, temporal, entity, and hierarchy indexes derive from canonical records.</p></div>
+            <div class="timeline-item"><time>REVIEW</time><h3>Promote, decay, archive, delete</h3><p>Decay retrieval priority where appropriate; propagate deletion through summaries, vectors, caches, and backups.</p></div>
+          </div>
+        </section>
+
+        <section class="article-section" id="why-retrieval">
+          <p class="kicker">04 · Context economics</p>
+          <h2>Why retrieve? Why not load every file?</h2>
+          <p class="lede">A context window is working memory, not a durable archive. Retrieval is the controlled read operation that moves the right long-term memories into that window.</p>
+
+          <div class="card-grid three">
+            <article class="card"><span class="card-icon orange">01</span><h3>Capacity</h3><p>Histories grow without bound; a context window does not. Every turn, tool trace, screenshot, and revision compounds.</p></article>
+            <article class="card"><span class="card-icon blue">02</span><h3>Attention</h3><p>Evidence can be “lost in the middle.” Irrelevant and stale memories compete with what matters now.</p></article>
+            <article class="card"><span class="card-icon gold">03</span><h3>Cost</h3><p>Repeatedly reading millions of tokens increases latency and inference cost—even if a model technically accepts them.</p></article>
+            <article class="card"><span class="card-icon">04</span><h3>Freshness</h3><p>Current facts, historical facts, and contradictions need explicit temporal resolution, not a flat pile of prose.</p></article>
+            <article class="card"><span class="card-icon orange">05</span><h3>Security</h3><p>Least-privilege filtering must happen before ranking. A full dump can cross user, project, or sensitivity boundaries.</p></article>
+            <article class="card"><span class="card-icon blue">06</span><h3>Diagnosis</h3><p>A retrieval trace lets you distinguish “evidence not found” from “evidence found but read incorrectly.”</p></article>
+          </div>
+
+          <p><a href="https://arxiv.org/abs/2307.03172">Lost in the Middle</a> showed that long-context models can use evidence unevenly depending on its position. <a href="https://arxiv.org/abs/2410.10813">LongMemEval</a> later found 30–60% QA degradation on ~115K-token histories relative to oracle evidence for the tested models. Longer context has improved since, but the architectural lesson remains: advertised capacity is not guaranteed usable memory.</p>
+
+          <div class="lab" data-budget-lab>
+            <div class="lab-head">
+              <div><h3>Context budget sandbox</h3><p>Estimate the prompt volume of rereading daily memory versus retrieving a compact evidence set. This is illustrative—not model pricing.</p></div>
+              <span class="badge">interactive</span>
+            </div>
+            <div class="lab-grid">
+              <div class="field">
+                <label for="days">Retained history <output id="days-out" data-days-out></output></label>
+                <input id="days" data-days type="range" min="7" max="730" step="1" value="180">
+              </div>
+              <div class="field">
+                <label for="per-day">Average daily memory <output id="per-day-out" data-per-day-out></output></label>
+                <input id="per-day" data-per-day type="range" min="500" max="30000" step="500" value="8000">
+              </div>
+              <div class="field">
+                <label for="top-k">Retrieved memories <output id="top-k-out" data-top-k-out></output></label>
+                <input id="top-k" data-top-k type="range" min="3" max="40" step="1" value="12">
+              </div>
+            </div>
+            <div class="lab-result" aria-live="polite">
+              <div class="lab-stat"><span>Load all</span><strong data-full-context>—</strong><span>tokens</span></div>
+              <div class="lab-stat"><span>Evidence pack</span><strong data-retrieved-context>—</strong><span>tokens</span></div>
+              <div class="lab-stat"><span>Reduction</span><strong data-reduction>—</strong><span>illustrative</span></div>
+            </div>
+          </div>
+
+          <h3>When loading everything is the right answer</h3>
+          <p>Retrieval introduces its own failure mode: a necessary memory can be missed. Full context can be better when the corpus is small, the task requires holistic synthesis, prompt caching makes repeated reads cheap, or retrieval confidence is low. Anthropic’s <a href="https://www.anthropic.com/engineering/contextual-retrieval">Contextual Retrieval guide</a> suggests full prompting can be simplest for a knowledge base under roughly 200K tokens in its tested setting. Treat that as a model- and workload-specific heuristic, not a law.</p>
+          <p>A controlled <a href="https://arxiv.org/abs/2407.16833">RAG-versus-long-context study</a> similarly found that sufficiently resourced long context often won on average quality while RAG retained a large cost advantage. The practical design is a <strong>router</strong>: retrieve by default as memory grows, but keep full-context or broader file inspection as a fallback and evaluation baseline.</p>
+        </section>
+
+        <section class="article-section" id="retrieval-stack">
+          <p class="kicker">05 · Retrieval engineering</p>
+          <h2>The production retrieval stack</h2>
+          <p class="section-intro">The strongest practical default is not “pick an embedding model.” It is a staged pipeline in which cheap signals maximize recall and expensive reasoning improves precision.</p>
+
+          <div class="pipeline" aria-label="Query-time retrieval pipeline">
+            <div class="pipeline-step"><span class="step-number">1</span><b>Understand</b><span>Preserve exact strings; detect entities, time, scope, query type, and memory type.</span></div>
+            <div class="pipeline-step"><span class="step-number">2</span><b>Constrain</b><span>Apply authorization, project, status, sensitivity, and valid-time filters first.</span></div>
+            <div class="pipeline-step"><span class="step-number">3</span><b>Recall</b><span>Run BM25/FTS and dense or late-interaction retrieval in parallel.</span></div>
+            <div class="pipeline-step"><span class="step-number">4</span><b>Fuse</b><span>Combine incomparable rankings with reciprocal rank fusion.</span></div>
+            <div class="pipeline-step"><span class="step-number">5</span><b>Rerank</b><span>Jointly score query + candidate with a cross-encoder or strong reranker.</span></div>
+            <div class="pipeline-step"><span class="step-number">6</span><b>Diversify</b><span>Remove duplicates; use MMR or coverage constraints to protect context budget.</span></div>
+            <div class="pipeline-step"><span class="step-number">7</span><b>Expand</b><span>Add headers, adjacent turns, timestamps, parent episode, and source spans.</span></div>
+            <div class="pipeline-step"><span class="step-number">8</span><b>Iterate</b><span>For missing/multi-hop evidence, search again; otherwise abstain with provenance.</span></div>
+          </div>
+
+          <h3>Method ladder</h3>
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Method</th><th>What it preserves</th><th>Best at</th><th>Fails when</th></tr></thead>
+              <tbody>
+                <tr><td>BM25 / FTS</td><td>Exact terms and frequency</td><td>Names, paths, hashes, dates, error codes, quotations</td><td>The query paraphrases the memory</td></tr>
+                <tr><td>Dense dual encoder</td><td>One semantic vector per unit</td><td>Paraphrases, concept similarity, fast ANN</td><td>Rare tokens, multiple claims, time, relation, or reasoning matter</td></tr>
+                <tr><td>Learned sparse</td><td>Expanded weighted vocabulary</td><td>Semantic recall with inverted-index behavior</td><td>Serving simplicity or domain transfer dominates</td></tr>
+                <tr><td>Late interaction</td><td>Token-level vectors and MaxSim-style interaction</td><td>Fine-grained retrieval without full cross-encoder cost</td><td>Index size and serving complexity are constrained</td></tr>
+                <tr><td>Cross-encoder</td><td>Joint query-document attention</td><td>Reranking tens of candidates precisely</td><td>Applied to the whole corpus</td></tr>
+                <tr><td>Temporal / graph</td><td>Entities, relations, valid time, paths</td><td>Multi-hop, “who/when,” changing facts</td><td>Entity extraction or relation resolution is noisy</td></tr>
+                <tr><td>Hierarchical</td><td>Multiple levels of abstraction</td><td>Session/topic/corpus-wide questions</td><td>Summaries lose leaf evidence</td></tr>
+                <tr><td>Agentic file search</td><td>Iterative tools and adaptive inspection</td><td>Workflow reconstruction and ambiguous evidence gathering</td><td>Latency, cost, or sandbox risk is tight</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Why simple dense embedding search is not enough</h3>
+          <div class="comparison">
+            <div>
+              <span class="badge blue">Dense-only</span>
+              <h3>One query, one vector, top-k</h3>
+              <ul>
+                <li>Fast semantic shortlist</li>
+                <li>Easy to implement and scale</li>
+                <li>Compresses every memory into one point</li>
+                <li>No inherent current-state or permission logic</li>
+                <li>No guarantee all multi-hop evidence appears</li>
+              </ul>
+            </div>
+            <div>
+              <span class="badge orange">Composite retrieval</span>
+              <h3>Constrain, ensemble, reason, cite</h3>
+              <ul>
+                <li>Exact and semantic signals complement each other</li>
+                <li>Time and scope are explicit filters</li>
+                <li>Reranking sees query and evidence together</li>
+                <li>Graph/hierarchy adds structure when justified</li>
+                <li>An agent can search again if evidence is incomplete</li>
+              </ul>
+            </div>
+          </div>
+
+          <p><a href="https://arxiv.org/abs/2104.08663">BEIR</a> found BM25 a robust zero-shot baseline and late interaction/reranking strong but more expensive. <a href="https://arxiv.org/abs/2407.12883">BRIGHT</a> showed why general retrieval scores are insufficient: models strong on conventional leaderboards performed poorly when document relevance required reasoning, while reasoning-expanded queries improved nDCG@10 by as much as 12.2 points in its experiments.</p>
+
+          <div class="lab" data-method-lab>
+            <div class="lab-head">
+              <div><h3>Retrieval method navigator</h3><p>Choose the shape of the question and the operational constraints. The result is an architecture starting point, not a benchmark verdict.</p></div>
+              <span class="badge">interactive</span>
+            </div>
+            <div class="lab-grid">
+              <div class="field">
+                <label for="query-shape">Query shape</label>
+                <select id="query-shape" data-query-shape>
+                  <option value="exact">Exact identifier or quote</option>
+                  <option value="semantic" selected>Semantic paraphrase</option>
+                  <option value="temporal">Current / as-of / changed fact</option>
+                  <option value="multihop">Multi-hop relationship</option>
+                  <option value="global">Global synthesis or summary</option>
+                  <option value="workflow">Procedure or prior workflow</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="corpus-scale">Corpus scale</label>
+                <select id="corpus-scale" data-corpus-scale>
+                  <option value="small">Small enough for full context</option>
+                  <option value="medium" selected>Thousands of memory units</option>
+                  <option value="large">Millions of memory units</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="update-rate">Update rate</label>
+                <select id="update-rate" data-update-rate>
+                  <option value="low">Mostly static</option>
+                  <option value="medium" selected>Regular updates</option>
+                  <option value="high">Continuous corrections/events</option>
+                </select>
+              </div>
+            </div>
+            <div class="lab-result" aria-live="polite">
+              <div class="recommendation"><strong data-method-title>—</strong><p data-method-explanation>—</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="article-section" id="frontier">
+          <p class="kicker">06 · State of the field</p>
+          <h2>What is “state of the art” in 2026?</h2>
+          <p class="lede">There is no universal winner. Exact recall, temporal state, associative multi-hop, dialogue personalization, global synthesis, and procedural experience are different tasks. System scores also mix the writer, store, retriever, controller, reader, and judge.</p>
+
+          <div class="callout">
+            <strong>Better wording than “the SOTA system”</strong>
+            <p>“This method is on the accuracy/latency frontier for this benchmark, corpus version, reader, prompt, and token budget.”</p>
+          </div>
+
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Need</th><th>Frontier exemplar</th><th>What is different from dense top-k</th><th>Caveat</th></tr></thead>
+              <tbody>
+                <tr><td>General practical recall</td><td>Contextual hybrid retrieval + reranker</td><td>Chunk context, BM25, embeddings, rank fusion, reranking</td><td>Must tune on the actual corpus</td></tr>
+                <tr><td>Conversational long-term memory</td><td><a href="https://arxiv.org/abs/2512.12818">Hindsight</a></td><td>Facts, experiences, entity summaries, beliefs; temporal/entity-aware recall and reflection</td><td>Reported 91.4% LongMemEval is an end-to-end system result with a scaled reader, not isolated retrieval</td></tr>
+                <tr><td>Associative multi-hop memory</td><td><a href="https://arxiv.org/abs/2502.14802">HippoRAG 2</a></td><td>Knowledge graph + Personalized PageRank + passage integration</td><td>Graph construction can fossilize extraction errors</td></tr>
+                <tr><td>Changing enterprise facts</td><td><a href="https://arxiv.org/abs/2501.13956">Graphiti / Zep</a></td><td>Temporal knowledge graph, valid history, hybrid and graph traversal</td><td>Strong design exemplar; not a universal leaderboard winner</td></tr>
+                <tr><td>File-native agent experience</td><td><a href="https://arxiv.org/abs/2605.12493">AgentRunbook-C</a></td><td>Coding agent searches manifests/files, inspects spans, and writes a structured evidence pack</td><td>High query latency versus fixed RAG</td></tr>
+                <tr><td>Low-latency agent experience</td><td>AgentRunbook-R style multi-pool RAG</td><td>Separate pools for raw states, events, and procedural notes with controller routing</td><td>Less adaptive than file-agent exploration</td></tr>
+                <tr><td>Global document synthesis</td><td><a href="https://arxiv.org/abs/2401.18059">RAPTOR</a> / GraphRAG-style hierarchy</td><td>Summary tree or community summaries, then leaf evidence</td><td>Indexing cost and summary loss</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>The result most relevant to file-based memory</h3>
+          <p><a href="https://arxiv.org/abs/2605.12493">LongMemEval-V2</a> evaluates evidence gathering over web-agent trajectories containing up to 115 million tokens. Its paper reports:</p>
+          <div class="card">
+            <div class="metric-row"><span>Simple RAG</span><div class="metric-track"><div class="metric-fill" style="width:40.1%"></div></div><span class="metric-value">40.1%</span></div>
+            <div class="metric-row"><span>Strongest RAG</span><div class="metric-track"><div class="metric-fill" style="width:48.5%"></div></div><span class="metric-value">48.5%</span></div>
+            <div class="metric-row"><span>AgentRunbook-R</span><div class="metric-track"><div class="metric-fill" style="width:57.8%"></div></div><span class="metric-value">57.8%</span></div>
+            <div class="metric-row"><span>Vanilla Codex</span><div class="metric-track"><div class="metric-fill" style="width:69.3%"></div></div><span class="metric-value">69.3%</span></div>
+            <div class="metric-row"><span>AgentRunbook-C</span><div class="metric-track"><div class="metric-fill" style="width:72.5%"></div></div><span class="metric-value">72.5%</span></div>
+          </div>
+          <p>AgentRunbook-C stores full trajectories as files, generates concise and full manifests, provides trajectory-inspection helpers, and asks a coding agent to select bounded supporting spans. It outperformed the paper’s fixed RAG baselines because the controller can adapt its search path to the question. It was also much slower. This is not proof that “grep beats vectors”; it is evidence that <strong>adaptive evidence gathering can beat a one-shot similarity pipeline when memory contains workflows, state transitions, images, and local gotchas.</strong></p>
+
+          <h3>The durable frontier pattern</h3>
+          <p><strong>Constrained hybrid retrieval + strong reranking + temporal/graph/hierarchical organization + adaptive multi-step search when justified.</strong> Start simple, measure failure types, and add structure only when an ablation proves it closes real misses.</p>
+        </section>
+
+        <section class="article-section" id="build">
+          <p class="kicker">07 · Jump-start plan</p>
+          <h2>Build the first benchmarkable system</h2>
+          <p class="section-intro">The goal is not an impressive demo score. It is a reproducible experiment that tells you which layer fails and why.</p>
+
+          <h3>Starter architecture</h3>
+          <ol>
+            <li><strong>Canonical Markdown + JSONL.</strong> Human-readable memory files with stable IDs and source spans; append-only raw events.</li>
+            <li><strong>SQLite sidecar.</strong> Metadata tables plus FTS5/BM25. Rebuild it from canonical files.</li>
+            <li><strong>Dense vectors.</strong> Use exact flat search while small. Introduce HNSW only after scale tests show it is needed.</li>
+            <li><strong>Hybrid candidate generation.</strong> Fetch broad lexical and dense pools in parallel, then fuse with RRF.</li>
+            <li><strong>Rerank and budget.</strong> Cross-encode the shortlist, deduplicate, diversify, and expand source context within a fixed token budget.</li>
+            <li><strong>Escalation path.</strong> If evidence is incomplete: query rewrite, temporal/entity expansion, agentic file scan, full-context read, or abstention.</li>
+          </ol>
+
+          <h3>Benchmark ablations, not brands</h3>
+          <div class="data-table-wrap">
+            <table class="data-table compact">
+              <thead><tr><th>Run</th><th>Change one thing</th><th>Question answered</th></tr></thead>
+              <tbody>
+                <tr><td>A</td><td>Full context / oracle evidence</td><td>Can the reader answer when retrieval cannot fail?</td></tr>
+                <tr><td>B</td><td>BM25 only</td><td>How much is exact lexical matching worth?</td></tr>
+                <tr><td>C</td><td>Dense only</td><td>How much paraphrase recall do embeddings add?</td></tr>
+                <tr><td>D</td><td>BM25 + dense + RRF</td><td>Are complementary signals additive?</td></tr>
+                <tr><td>E</td><td>D + cross-encoder reranker</td><td>Does shortlist precision improve enough for its latency?</td></tr>
+                <tr><td>F</td><td>E + temporal/current-state logic</td><td>Are updates and “as-of” questions fixed?</td></tr>
+                <tr><td>G</td><td>F + hierarchy/graph</td><td>Do global and multi-hop cases improve?</td></tr>
+                <tr><td>H</td><td>G + iterative agentic search</td><td>Does adaptive exploration justify its token/latency cost?</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Measure three layers separately</h3>
+          <div class="card-grid three">
+            <article class="card"><span class="badge teal">Component</span><h3>Retrieval</h3><p>Strict Recall-all@k, Recall-any@k, nDCG@k, MRR, precision, stale/wrong-user evidence, redundancy, and context tokens.</p></article>
+            <article class="card"><span class="badge blue">Fixed reader</span><h3>Memory QA</h3><p>Answer accuracy, temporal/update correctness, abstention, citation support, and groundedness with one frozen reader.</p></article>
+            <article class="card"><span class="badge orange">Whole agent</span><h3>Task outcome</h3><p>Success, progress, safety violations, p50/p95 latency, read/write cost, and behavior across multiple sessions.</p></article>
+          </div>
+
+          <p>Always include <strong>oracle evidence</strong>, <strong>no memory</strong>, and <strong>full context when feasible</strong>. The oracle gap measures reader/reasoning failure; the gap from oracle to retrieved evidence measures memory/retrieval failure.</p>
+
+          <div class="inline-actions">
+            <a class="button dark" href="benchmarks.html">Choose benchmark suites</a>
+            <a class="button" href="examples/memory/MEMORY.md">Open the sample memory index</a>
+          </div>
+        </section>
+
+        <section class="article-section" id="safety">
+          <p class="kicker">08 · Trust boundary</p>
+          <h2>Memory is an attack surface</h2>
+          <p class="lede">A poisoned memory can influence later sessions after the original malicious input is gone. Retrieved content must be evidence—not an automatic extension of the system prompt.</p>
+
+          <div class="card-grid">
+            <article class="card"><h3>Scope before search</h3><p>Enforce tenant, user, agent, project, sensitivity, and authorization as database predicates before candidate generation.</p></article>
+            <article class="card"><h3>Separate facts from directives</h3><p>A remembered sentence about a procedure must not gain tool authority merely because it is similar to the current task.</p></article>
+            <article class="card"><h3>Provenance-gated promotion</h3><p>Untrusted web, email, document, or tool output cannot directly promote itself into core or procedural memory.</p></article>
+            <article class="card"><h3>Lineage-aware deletion</h3><p>Delete the canonical record and every derived summary, embedding, cache, graph edge, and retrievable backup copy covered by policy.</p></article>
+            <article class="card"><h3>Version changing truth</h3><p>Keep historical events; mark current facts with validity and supersession. Do not resolve conflicts by recency alone.</p></article>
+            <article class="card"><h3>Fail closed</h3><p>If no evidence clears a calibrated threshold, broaden search safely or abstain. Never turn low cosine similarity into confident memory.</p></article>
+          </div>
+
+          <h3>Tests most teams forget</h3>
+          <ul>
+            <li>Wrong-user and wrong-project memory that is semantically perfect for the query.</li>
+            <li>A newer correction that contradicts a highly similar older statement.</li>
+            <li>A future-dated fact accidentally visible to an “as of last month” query.</li>
+            <li>Malicious instructions embedded in a retrieved web page or tool output.</li>
+            <li>Five near-duplicate memories crowding out one complementary evidence item.</li>
+            <li>A deletion that survives in a summary, vector index, cache, or entity graph.</li>
+            <li>An unanswerable question that tempts the model to force-fit a nearby memory.</li>
+          </ul>
+          <p>OWASP’s <a href="https://genai.owasp.org/2026/05/13/memory-is-a-feature-it-is-also-an-attack-surface/">2026 memory attack-surface guidance</a> treats persistent context corruption as a distinct agent risk. Design the admission and retrieval gates as security controls, not prompt suggestions.</p>
+        </section>
+
+        <section class="article-section" id="takeaways">
+          <p class="kicker">09 · Keep this</p>
+          <h2>The shortest useful summary</h2>
+          <div class="callout teal">
+            <strong>A good memory system is a cited, versioned, access-controlled evidence service for an agent.</strong>
+            <p>Files are a transparent canonical interface. Retrieval is query-time attention allocation. Dense vectors are one signal. Benchmarks must separate retrieval from reading and reading from action.</p>
+          </div>
+          <ol>
+            <li>Keep <code>USER.md</code> tiny, explicit, current, and user-reviewable.</li>
+            <li>Use <code>MEMORY.md</code> as a curated router—not a warehouse.</li>
+            <li>Use ISO-dated append-mostly notes for episodes and evidence.</li>
+            <li>Store provenance, scope, valid time, and supersession with every durable memory.</li>
+            <li>Start with BM25 + dense + RRF + reranking; add graph/hierarchy/agents only for measured misses.</li>
+            <li>Keep full-context and direct file search as fallbacks and evaluation controls.</li>
+            <li>Pin every benchmark component and report an accuracy–latency–cost frontier, not one magic score.</li>
+          </ol>
+          <div class="inline-actions">
+            <a class="button primary" href="benchmarks.html">Continue to benchmarks</a>
+            <a class="button" href="sources.html">Review primary sources</a>
+          </div>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <p class="footer-title">Build memory you can inspect, test, and forget.</p>
+        <p class="footer-note">Agentic Memory Atlas · Research snapshot dated 22 September 2026. Claims are linked to primary papers, official repositories, or official documentation. Reported benchmark results are not assumed to be directly comparable across setups.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="benchmarks.html">Benchmarks</a>
+        <a href="sources.html">Sources</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
